@@ -1,0 +1,19 @@
+;;Oppgave 1
+
+;;(a)
+(* (+ 4 2) 5)
+;;
+
+
+;;(b)
+;;(* (+ 4 2) (5))
+;; Antar at inni () vil det komme forst 1 operator og minst 2 operander. (5) mangler en 
+
+;;(c)
+;;(* (4 + 2) 5)
+;; folger ikke syntaks, til venstre inni () skal operand komme forst og deretter operatorer.
+;; Her tror kompilator at 4 er operator, men det er ingen operasjon som dette symbolet gjoer i dette spraket.
+
+;;(d)
+(define bar (/ 44 2))
+bar
