@@ -102,3 +102,66 @@ bar
    (and (< tall 0) -1) ;; tall og strenger blir evaluert til #t
    (and (> tall 0) 1))) ;;  kan bruke dette for aa sende onsket resultat til REPL'en
 (sign3 -12)
+
+"Oppgave 3"
+;;(a)
+;; Adderer 1
+(define (add1 tall)
+  (+ tall 1))
+;; Subtraherer 1
+(define (sub1 tall)
+  (- tall 1))
+
+(add1 3)
+(sub1 2)
+(add1 (sub1 0))
+
+;;(b)
+;; Tar 2 positive heltall og legger sammen
+(define (pluss tall1 tall2)
+  (if (= 0 tall2)
+      tall1
+      (pluss (add1 tall1) (sub1 tall2))))
+
+(pluss 10 10)
+
+;;(c)
+;; Rekursjon vil anvende seg selv til den treffer en "base case",
+;; eller den mest reduserte instansen av problemet.
+;; Deretter vil den bruke resultatet fra base case til steget for base case og beregne dette trinnet.
+;; Disse resultatene blir med tilbake til forste trinn til man til slutt har den endelige resultatet.
+
+;; En rekursiv prosess er da en kjede eller loop av en prosedyre som kaller seg selv om og om igjen,
+;; til man treffer base case.
+;; I tilfellet i oppgave (b) over er base case naar tall2 = 0.
+
+;; En iterativ prosess vil vaere rekursiv og kalle paa seg selv, men vil ikke gjore alle trinnene tilbake.
+;; Istedet vil den komme naermere den endelige utregningen for hvert kall paa seg selv.
+
+;; Prosedyren jeg har skrevet over er en iterativ prosess.
+;; Dette er fordi siste kall paa prosedyren vil ogsaa vaere siste steg paa utregningen.
+
+;;(d)
+;; Skriv om prosedyre til blokkstruktur
+;; Kan forenkle litt, fjerner b og n fra parameterene til power-iter.
+;; De har samme verdi hele veien og hentes fra  power-close-to.
+(define (power-close-to b n)
+  (define (power-iter e)
+  (if (> (expt b e) n)
+      e
+      (power-iter (+ 1 e))))
+  (power-iter 1))
+
+(power-close-to 2 8)
+
+;;(e)
+;; Forenkle Fibonacci-tall prosedyre
+;; Det er vanskelig aa forenkle denne, fordi man endrer verdien til alle variablene.
+;; Det maa vaere arguemnter som kan ta inn disse nye verdiene for hver iterasjon.
+(define (fib n)
+  (define (fib-iter a b count)
+    (if (= count 0)
+        b
+        (fib-iter (+ a b) a (- count 1))))
+  (fib-iter 1 0 n))
+(fib 7)
