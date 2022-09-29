@@ -1,19 +1,165 @@
-;;Oppgave 1
+;;Obligatorisk innlevering 1a
+"Oppgave 1"
 
 ;;(a)
 (* (+ 4 2) 5)
-;;
+;; Gir 55, ingen feil. 
+;; Operatorer er til hoyre og minst to operander 
 
 
 ;;(b)
 ;;(* (+ 4 2) (5))
-;; Antar at inni () vil det komme forst 1 operator og minst 2 operander. (5) mangler en 
+;; Har en feil.
+;; Antar at innenfor en "()" vil det komme forst 1 operator og minst 2 operander.
+;; Altsa er det mest grunnleggende templatet "(operator operand operand)"
+;; Og man kan legge til sa mange operander man vil, sa lenge det er minst 2.
+;; For "(5)" Interpereteren vil faa feil fordi det mangler en operand og en operator
 
 ;;(c)
 ;;(* (4 + 2) 5)
-;; folger ikke syntaks, til venstre inni () skal operand komme forst og deretter operatorer.
-;; Her tror kompilator at 4 er operator, men det er ingen operasjon som dette symbolet gjoer i dette spraket.
+;; Har en feil
+;; folger ikke syntaks, til venstre inni en () skal operand komme forst og deretter operatorer.
+;; Her tror kompilator at 4 er operator, men det er ingen operasjon som dette symbolet er definert til a gjore.
+;; Det vil derfor oppsta en feil. 
 
 ;;(d)
 (define bar (/ 44 2))
 bar
+;; Har ingen feil.
+;; Ved aa starte "()" med "define" vil interpereter anta at dette er en prosedyre.
+;; Her lages en variabel som holder verdien utregnet i "(/ 44 2)"
+;; Denne verdien er konstant lagret i variabelen "bar"
+;; For at verdien skal printes til konsollen maa man deretter kalle paa prosedyren ved aa kun skrive navnet.
+
+;;(e) 
+(- bar 11)
+;; Ingen feil
+;; Folger evalueringsreglene, bar vil returnere 22 og saa trekkes fra 11
+
+;;(f)
+(/ (* bar 3 4 1) bar)
+;; Ingen feil.
+;; Folger evalueringsreglene som nevnt ovenfor.
+;; Har operator lengst til venstre i parentes og operandene etter.
+;; Tallet som bar returnerer fungerer som en operand og vil ikke forstyrre evalueringen.
+
+"oppgave 2"
+;; (a)
+;; Verdiene evalueres til
+(or (= 1 2)
+"paff!"
+"piff!"
+(zero? (1 - 1)))
+;; 'or' velger den forste sanne eller true (#t) verdien.
+;; Kun noe som er feil eller false (#f) vil evalueres til #f
+;; Resten vil evalueres til #t
+;; siden (= 1 2) er #f vil "paff!" kommer paa REPL’en
+(and (= 1 2)
+"paff!"
+"piff!"
+(zero? (1 - 1)))
+;; Her er resultatet #f
+;; For 'and' vil resultatet blir #t eller #f.
+;; Alle uttrykkene som evalueres maa vaere sanne for aa faa #t
+;; Med en gang interpreter evaluerer et uttrykk som #f,
+;; vil den stoppe og #f sees paa REPL'en.
+(if (positive? 42)
+"poff!"
+(i-am-undefined))
+;; Resultatet er "poff!"
+;; If vil analysere to saker og starter med predikatet eller en test lengst til venstre.
+;; Om predikatet er sant vil neste elemet i parentesen sendes til REPL'en
+;; Om testen er #f vil neste element bli utfort.
+
+;;(b)
+;; Prosedyre som tester for negativ, positive eller 0
+;; Bruker cond, sjekker saa mange kondisjonale uttrykk man vil.
+;; Forste riktige man kommer til vil sendes til REPL'en,
+;; derfor er det viktig aa sjekke 0 forst.
+(define (sign tall)
+  (cond ((= tall 0) 0)
+        ((positive? tall) 1)
+        ((negative? tall) -1)))
+(sign -12)
+;; Bruker if, som har tre deler test, utfall-hvis-sant og utfall-hvis-usant
+;; Forst sjekker vi om test er #t.
+;; Om den er #t vil utfall-hvis-sant utfores.
+;; Om det er #f vil den hoppe til utfall-hvis-usant og utfore denne linjen.
+;; Dette er en ny if-test som igjen vil ha tre deler.
+(define (sign2 tall)
+  (if (= tall 0)
+      0
+      (if (negative? tall)
+          -1
+          1)))
+(sign2 -23)
+
+;;(c)
+;; Test uten cond eller if
+(define (sign3 tall)
+  (or ;; Den forste sanne vil bli sent itl REPL'en
+   (and (= tall 0) 0) ;; sjekker begge om begge uttrykkene er #t og sender siste uttrykk.
+   (and (< tall 0) -1) ;; tall og strenger blir evaluert til #t
+   (and (> tall 0) 1))) ;;  kan bruke dette for aa sende onsket resultat til REPL'en
+(sign3 -12)
+
+"Oppgave 3"
+;;(a)
+;; Adderer 1
+(define (add1 tall)
+  (+ tall 1))
+;; Subtraherer 1
+(define (sub1 tall)
+  (- tall 1))
+
+(add1 3)
+(sub1 2)
+(add1 (sub1 0))
+
+;;(b)
+;; Tar 2 positive heltall og legger sammen
+(define (pluss tall1 tall2)
+  (if (= 0 tall2)
+      tall1
+      (pluss (add1 tall1) (sub1 tall2))))
+
+(pluss 10 10)
+
+;;(c)
+;; Rekursjon vil anvende seg selv til den treffer en "base case",
+;; eller den mest reduserte instansen av problemet.
+;; Deretter vil den bruke resultatet fra base case til steget for base case og beregne dette trinnet.
+;; Disse resultatene blir med tilbake til forste trinn til man til slutt har den endelige resultatet.
+
+;; En rekursiv prosess er da en kjede eller loop av en prosedyre som kaller seg selv om og om igjen,
+;; til man treffer base case.
+;; I tilfellet i oppgave (b) over er base case naar tall2 = 0.
+
+;; En iterativ prosess vil vaere rekursiv og kalle paa seg selv, men vil ikke gjore alle trinnene tilbake.
+;; Istedet vil den komme naermere den endelige utregningen for hvert kall paa seg selv.
+
+;; Prosedyren jeg har skrevet over er en iterativ prosess.
+;; Dette er fordi siste kall paa prosedyren vil ogsaa vaere siste steg paa utregningen.
+
+;;(d)
+;; Skriv om prosedyre til blokkstruktur
+(define (power-close-to b n)
+  (define (power-iter c m e)
+  (if (> (expt c e) m)
+      e
+      (power-iter c m (+ 1 e))))
+  (power-iter b n 1))
+
+(power-close-to 2 8)
+
+;;(c)
+;; Forenkle Fibonacci-tall prosedyre
+
+(define (fib n)
+  (fib-iter 1 0 n))
+(define (fib-iter a b count)
+  (if (= count 0)
+      b
+      (fib-iter (+ a b) a (- count 1))))
+
+(fib 7)
