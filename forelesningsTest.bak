@@ -1,17 +1,100 @@
-(define foo (cons 1 2))
-foo
-(car foo)
-(cdr foo)
+;;"square"
+(define (square x)
+  (* x x))
 
-(define faa (cons 1(cons 2(cons 3(cons 4(cons 5'()))))))
-faa
-
-(list 6 7 8 9)
-
-(define (map proc items)
+;;"reduce"
+(define (reduce proc init items)
   (if (null? items)
-  '()
-  (cons (proc (car items))
-        (map proc (cdr items)))))
+      init
+      (proc(car items)
+           (reduce proc init (cdr items)))))
 
-;;(reduce * 1 '(1 2 3 4))
+;;"filter"
+(define (filter pred items)
+  (cond ((null? items) '())
+        ((pred (car items))
+         (cons (car items)
+               (filter pred (cdr items))))
+        (else (filter pred (cdr items)))))
+
+;;(filter (lambda (x)
+;;         (and (> x 2) (< x 8)))
+;;        '(0 1 2 3 4 5 6 7 8 9))
+
+;;"percentages"
+(define (percentages items)
+  (map (lambda (x) (/ x (/ (reduce + 0 items) 100)))
+         items))
+
+;;(percentages '(10 90 50 50))
+
+;;percentage
+(define (percentage items)
+  (let ((sum (/ (reduce + 0 items) 100)))
+       (map (lambda (x) (/ x sum))
+            items)))
+
+;;Lenght of list
+(define (count-leaves tree)
+  (cond ((null? tree) ;;check for empty list
+         0)
+        ((pair? tree) ;;check for cons-cell
+         (+ (count-leaves (car tree)) ;;recursion on first element in list
+            (count-leaves (cdr tree)))) ;;Recursion on rest of the list
+        (else 1))) ;; add 1 when a leaf node is reached
+
+(define foo-list '((1 2) 3 4 ((5 6) 7) 8))
+
+(count-leaves foo-list)
+
+(define (fringe tree)
+  (cond ((null? tree) '()) ;;check for empty/end of list return, empty list
+        ((pair? tree) ;; check if the node is a sub tree
+         (append (fringe (car tree)) ;;appends kombine two lists, no sub lists
+                 (fringe (cdr tree)))) ;;append happens in the deepest subtree
+        (else (list tree))))
+
+(fringe foo-list)
+
+;;takes in tree and procedure to perform on every leaf node
+(define (tree-map proc tree) 
+  (cond ((null? tree) '()) ;; check for empty list
+        ((pair? tree) ;;check for subtree
+         (cons (tree-map proc (car tree)) ;;recursion first element in list 
+               (tree-map proc (cdr tree)))) ;; recursion rest of elemens in list 
+        (else (proc tree)))) ;;does the procedure on the leaf node
+
+(tree-map square (fringe foo-list))
+
+
+(define (tree-map1 proc tree)
+  (map (lambda (subtree) 
+         (if (pair? subtree)
+             (tree-map1 proc subtree)
+             (proc subtree)))
+       tree))
+
+(tree-map1 square '((1 2) 3 4))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;;END

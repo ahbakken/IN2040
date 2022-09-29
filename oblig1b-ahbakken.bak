@@ -1,0 +1,4 @@
+;;Pair and lists
+;; Pull out 42 with cdr or car
+;;1f - cdr gives (42 #t bar) and car takes the first element 42
+(car(cdr '(0 42 #t bar)))
