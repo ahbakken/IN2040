@@ -170,13 +170,53 @@
          (make-tree (entry set) 
                     (adjoin-set x (left-branch set)) ;; add x to left branch
                     (right-branch set)))
-        ((> x (entry set)) ;;if x is bibber than node
+        ((> x (entry set)) ;;if x is bigger than node
          (make-tree (entry set)
                     (left-branch set) 
                     (adjoin-set x (right-branch set)))))) ;;add x to right branch
 
 
-;(adjoin-set 4 '(1 2 5 6 9))
+;;(adjoin-set 4 '(1 2 5 6 9))
+
+
+;;Huffman trees - abstraction barrier
+(define (make-leaf symbol weight)
+  (list 'leaf symbol weight))
+
+(define (leaf? object)
+  (eq? (car object) 'leaf))
+
+(define (symbol-leaf x)
+  (cadr x))
+
+(define (weight-leaf)
+  (caddr x))
+
+(define (make-code-tree left right) ;;making a node in the tree
+  (list left ;;the node is a list with, left, right, symbol and sum weight
+        right
+        (append (symbols left)
+                (symbols right))
+        (+ (weight left) (weight right))))
+
+(define (left-branch tree)
+  (car tree))
+
+(define (right-branch tree)
+  (cadr tree))
+
+(define (symbols tree)
+  (if (leaf? tree) ;;if the node is a leaf
+      (list (symbol-leaf tree))
+      (caddr tree)))
+
+(define (weight tree)
+  (if (leaf? tree)
+      (weight-leaf tree)
+      (cadddr tree)))
+
+
+
 
 
 
