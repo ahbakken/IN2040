@@ -1,3 +1,4 @@
+;;Week 8
 (define (sum . args)
   (define (recurse list)
     (if (null? list)
