@@ -40,9 +40,12 @@
 
 (define (stream-null? stream)
   (null? stream))
-                    
-(define (cons-stream x y)
-  (cons x (delay y)))
+
+;;don't understand 100% why this have to have define syntax to work with integers-starting-from
+(define-syntax ;;explanation next week
+  cons-stream
+  (syntax-rules ()
+    ((cons-stream head tail) (cons head (delay tail)))))
 
 ;(cons-stream 2 5)
 
@@ -79,12 +82,49 @@
   x)
 
 (define baby (delay (dengo 42)))
-baby
-(force baby)
+;baby
+;(force baby)
 
-
+;stream of integers
 (define (integers-starting-from n)
   (cons-stream n (integers-starting-from (+ n 1))))
+
+
+(define nats (integers-starting-from 1))
+;nats
+
+(define (stream-ref s n)
+  (if (= n 0)
+      (stream-car s)
+      (stream-ref (stream-cdr s) (- n 1))))
+
+
+;force the first n integers of a stream
+(define (show-stream stream n)
+  (cond ((= n 0) (display "...\n"))
+        ((stream-null? stream) (newline))
+        (else (display (stream-car stream))
+              (display " ")
+              (show-stream (stream-cdr stream) (- n 1)))))
+
+
+(define odds (stream-filter odd? nats))
+(show-stream odds 5)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
