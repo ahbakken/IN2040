@@ -20,7 +20,7 @@
 (define (error reason . args)
   (display "ERROR: ")
   (display reason)
-  (for-each (lambda (arg) 
+  (for-each (lambda (arg) s
 	      (display " ")
 	      (write arg))
 	    args)
