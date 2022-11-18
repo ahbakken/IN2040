@@ -57,7 +57,7 @@
          (error
           "Unknown procedure type -- mc-apply:" proc))))
 
-(define (eval-special-form exp env)
+(define (eval-special-form exp env) ;; endret for oppgave 3a) og 3c) i oblig3b.scm
   (cond ((quoted? exp) (text-of-quotation exp))
         ((assignment? exp) (eval-assignment exp env))
         ((definition? exp) (eval-definition exp env))
@@ -70,7 +70,8 @@
          (eval-sequence (begin-actions exp) env))
         ((cond? exp) (mc-eval (cond->if exp) env))))
 
-(define (special-form? exp)
+
+(define (special-form? exp) ;; endret for oppgave 3a) og 3c) i oblig3b.scm
   (cond ((quoted? exp) #t)
         ((assignment? exp) #t)
         ((definition? exp) #t)
@@ -230,7 +231,6 @@
                      (sequence->exp (cond-actions first))
                      (expand-clauses rest))))))
 
-
 ;;; Evaluatorens interne datastrukturer for å representere omgivelser,
 ;;; prosedyrer, osv (seksjon 4.1.3, SICP):
 ;;; -----------------------------------------------------------------------
@@ -351,7 +351,7 @@
 
 (define (primitive-implementation proc) (cadr proc))
 
-(define primitive-procedures
+(define primitive-procedures 
   (list (list 'car car)
         (list 'cdr cdr)
         (list 'cons cons)
@@ -369,6 +369,10 @@
         (list 'newline 
               (lambda () (newline) 'ok))
 ;;      her kan vi legge til flere primitiver.
+        (list '1+
+              (lambda (x) (+ x 1))) ;;endret fra prekode
+        (list '1-
+              (lambda (x) (- x 1))) ;;endret fra prekode
         ))
 
 (define (primitive-procedure-names)

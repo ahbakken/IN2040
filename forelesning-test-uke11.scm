@@ -61,20 +61,100 @@
   (read-eval-print-loop))
       
 
+(define (proc-if test then else)
+  (if test then else))
+
+(define (foo) (foo))
+
+(if #f (foo) 'bar)
+;(proc-if #f (foo) 'bar) ;;infinite loop
+
+(if #f (/ 1 0) 'bar)
+;(proc-if #f (/ 1 0) 'bar) ;error: divition by zer
 
 
+;;thunks
+(define (delay-it exp env)
+  (list 'thunk exp env))
+
+(define (thunk? obj)
+  (tagged-list? obj 'thunk))
+
+(define (thunk-exp thunk)
+  (cadr thunk))
+
+(define (thunk-env thunk)
+  (caddr thunk))
+
+(define (evaluated-thunk? obj)
+  (tagged-list? obj
+                'evaluated-thunk))
+
+(define (thunk-value thunk)
+  (cadr thunk))
 
 
+(define (force-it obj)
+  (cond ((thunk? obj)
+         (let ((result (actual-value       ;; evaluate the expression
+                        (thunk-exp obj)
+                        (thunk-env obj))))
+         (set-car! obj 'evaluated-thunk)
+         (set-car! (cdr obj) result)       ;; replace expression with value
+         (set-cdr! (cdr obj) '())          ;; forget the environment
+         result))
+  ((evaluated-thunk? obj)                  ;; memoized?
+   (thunk-value obj))
+  (else obj)))                             ;; not a thunk
+   
+(define (actual-value exp env)
+  (force-it (mc-eval exp env)))
 
 
+;;change in mc-eval for lazy scheme
+(define (mc-eval exp env)
+  (cond ((self-evaluating? exp) exp)
+        ((variable? exp) (lookup-variable-value exp env))
+        ((special-form? exp) (eval-special-form exp env))
+        ((application? exp)
+         (mc-apply (actual-value (operator exp) env) ;; change from last mc-eval
+                   ((operands exp)
+                    env)))))
 
 
+;;change in mc-apply for lazy scheme
+
+(define (mc-apply proc args env)
+  (cond ((primitive-procedure? proc)
+         ((apply-primitive-procedure
+           proc (list-of-arg-values args env))) ;; Gets actaul values
+         ((compound-procedure? proc)
+          (eval-sequence
+           (procedure-body proc)
+           (extend-environment
+            (procedure-parameters proc)         ;; parameters are bound
+            (list-of-delayed-args args env)     ;; to thunks
+            (procedure-environment proc)))))))
 
 
+(define (list-of-arg-values exps env)
+  (if (no-operands? exps) '()
+      (cons (actual-value (first-operand exps) env)
+            (list-of-arg-values (rest-exps exps) env))))
+            
+(define (list-of-delayed-args exps env)
+  (if (no-operands? exps) '()
+      (cons (delay-it (first-operand exps) env)
+            (list-of-delayed-args (rest-operands exps) env))))
 
 
+;;streams as lazy lists
+;(define (cons x y)
+ ; (lambda (m)(m x y)))
 
+;(define (car z)
+ ; (z (lambda (p q) p)))
 
-
-
+;(define (cdr z)
+ ; (z (lambda (p q) q)))
 ;;END
